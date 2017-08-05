@@ -1,0 +1,68 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = 'forge'
+            url = 'http://files.minecraftforge.net/maven'
+        }
+        maven {
+            name = 'sponge'
+            url = 'https://repo.spongepowered.org/maven'
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'net.minecraftforge.gradle.tweaker-client'
+apply plugin: 'org.spongepowered.mixin'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+group = 'me.jamiemansfield'
+archivesBaseName = project.name.toLowerCase()
+version = '0.0.1-indev'
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'sponge'
+        url = 'https://repo.spongepowered.org/maven/'
+    }
+}
+
+dependencies {
+    compile('org.spongepowered:mixin:0.7.1-SNAPSHOT') {
+        exclude module: 'asm-commons'
+        exclude module: 'asm-tree'
+        exclude module: 'launchwrapper'
+        exclude module: 'guava'
+        exclude module: 'gson'
+    }
+}
+
+minecraft {
+    version = '1.12'
+    mappings = 'snapshot_20170803'
+    runDir = 'run'
+
+    tweakClass = 'me.jamiemansfield.excel.launch.ExcelLoaderTweaker'
+}
+
+sourceSets {
+    main {
+        ext.refMap = 'mixins.excelloader.refmap.json'
+    }
+}
+
+mixin {
+    defaultObfuscationEnv notch
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.0.2'
+}

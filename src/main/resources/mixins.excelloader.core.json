@@ -1,0 +1,10 @@
+{
+    "minVersion": "0.7.1",
+    "compatibilityLevel": "JAVA_8",
+    "package": "me.jamiemansfield.excel.mixin.core",
+    "refmap": "mixins.excelloader.refmap.json",
+    "mixins": [
+        "client.MixinClientBrandRetriever",
+        "server.MixinMinecraftServer"
+    ]
+}
