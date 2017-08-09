@@ -6,6 +6,8 @@
 
 package me.jamiemansfield.excel.mod;
 
+import me.jamiemansfield.excel.util.Namespace;
+
 /**
  * A container to represent a mod, and its associated metadata.
  */
@@ -31,6 +33,13 @@ public interface ModContainer {
      * @return The mod's version
      */
     String getVersion();
+
+    /**
+     * Gets the namespace of which the mod has.
+     *
+     * @return The mod's namespace
+     */
+    Namespace getNamespace();
 
     /**
      * Gets the instance of the mod being contained.

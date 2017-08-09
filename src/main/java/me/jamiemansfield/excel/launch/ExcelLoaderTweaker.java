@@ -86,7 +86,7 @@ public abstract class ExcelLoaderTweaker implements ITweaker {
         configureLaunchClassLoader(loader);
         configureMixinEnvironment();
 
-        log.info("Initialisation complete. Starting Minecraft...");
+        log.info("Initialisation complete. Starting Minecraft {}...", SharedConstants.Mc.VERSION);
     }
 
     @Override
@@ -106,6 +106,14 @@ public abstract class ExcelLoaderTweaker implements ITweaker {
     }
 
     private static void configureLaunchClassLoader(final LaunchClassLoader loader) {
+        // Logging
+        loader.addClassLoaderExclusion("com.mojang.util.QueueLogAppender");
+
+        // ExcelLoader launch code
+        loader.addClassLoaderExclusion("com.google.common.");
+        loader.addClassLoaderExclusion("me.jamiemansfield.excel.launch.");
+        loader.addClassLoaderExclusion("me.jamiemansfield.excel.ExcelLoader");
+        loader.addClassLoaderExclusion("me.jamiemansfield.excel.SharedConstants");
     }
 
     private static void configureMixinEnvironment() {

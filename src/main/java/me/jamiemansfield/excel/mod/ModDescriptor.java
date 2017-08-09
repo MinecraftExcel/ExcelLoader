@@ -29,26 +29,26 @@ import java.util.Objects;
  */
 public class ModDescriptor {
 
-    private final String mainClass;
+    private final String system;
     private final String id;
     private final String name;
     private final String version;
 
-    public ModDescriptor(final String mainClass, final String id, final String name,
+    public ModDescriptor(final String system, final String id, final String name,
             final String version) {
-        this.mainClass = mainClass;
+        this.system = system;
         this.id = id;
         this.name = Strings.isNullOrEmpty(name) ? id : name;
         this.version = Strings.isNullOrEmpty(version) ? "0.0.1" : version;
     }
 
     /**
-     * Gets the main class of the mod being described.
+     * Gets the modification system that will load the mod.
      *
-     * @return The mod's main class
+     * @return The mod system
      */
-    public final String getMainClass() {
-        return this.mainClass;
+    public final String getSystem() {
+        return this.system;
     }
 
     /**
@@ -80,13 +80,13 @@ public class ModDescriptor {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.mainClass, this.id, this.name, this.version);
+        return Objects.hash(this.system, this.id, this.name, this.version);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("mainClass", this.mainClass)
+                .add("system", this.system)
                 .add("id", this.id)
                 .add("name", this.name)
                 .add("version", this.version)
@@ -98,7 +98,7 @@ public class ModDescriptor {
         if (this == obj) return true;
         if (!(obj instanceof ModDescriptor)) return false;
         final ModDescriptor that = (ModDescriptor) obj;
-        return Objects.equals(this.mainClass, that.mainClass) &&
+        return Objects.equals(this.system, that.system) &&
                 Objects.equals(this.id, that.id) &&
                 Objects.equals(this.name, that.name) &&
                 Objects.equals(this.version, that.version);
@@ -145,12 +145,13 @@ public class ModDescriptor {
             }
             final JsonObject obj = json.getAsJsonObject();
 
-            if (!(obj.has("mainClass") && obj.has("id"))) {
-                throw new JsonParseException("Failed to obtain both a mainClass and an id from " + json);
+            if (!(obj.has("system") &&
+                    obj.has("id"))) {
+                throw new JsonParseException("Failed to obtain the required data from: " + json);
             }
 
             return new ModDescriptor(
-                    obj.get("mainClass").getAsString(),
+                    obj.get("system").getAsString(),
                     obj.get("id").getAsString(),
                     obj.has("name") ? obj.get("name").getAsString() : null,
                     obj.has("version") ? obj.get("version").getAsString() : null
@@ -162,7 +163,7 @@ public class ModDescriptor {
                 final JsonSerializationContext context) {
             final JsonObject json = new JsonObject();
 
-            json.add("mainClass", new JsonPrimitive(src.getMainClass()));
+            json.add("system", new JsonPrimitive(src.getSystem()));
             json.add("id", new JsonPrimitive(src.getId()));
             json.add("name", new JsonPrimitive(src.getName()));
             json.add("version", new JsonPrimitive(src.getVersion()));

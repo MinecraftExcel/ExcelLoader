@@ -6,6 +6,8 @@
 
 package me.jamiemansfield.excel;
 
+import me.jamiemansfield.excel.mod.ModContainer;
+import me.jamiemansfield.excel.mod.ModManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,6 +22,11 @@ public final class ExcelLoader {
      * <b>Mods should not used this {@link Logger}!</b>
      */
     public static final Logger log = LogManager.getLogger("ExcelLoader");
+
+    /**
+     * The manager for {@link ModContainer}s.
+     */
+    public static final ModManager modManager = new ModManager();
 
     private ExcelLoader() {
     }
