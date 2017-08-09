@@ -4,7 +4,11 @@
     "package": "me.jamiemansfield.excel.mixin.core",
     "refmap": "mixins.excelloader.refmap.json",
     "mixins": [
-        "client.MixinClientBrandRetriever",
         "server.MixinMinecraftServer"
+    ],
+    "client": [
+        "client.MixinClientBrandRetriever"
+    ],
+    "server": [
     ]
 }

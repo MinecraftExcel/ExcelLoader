@@ -15,7 +15,6 @@ import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.spongepowered.asm.launch.MixinBootstrap;
-import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
 
 import java.io.File;
@@ -25,17 +24,19 @@ import java.util.Map;
 /**
  * The tweaker class for the ExcelLoader modification loader.
  */
-public class ExcelLoaderTweaker implements ITweaker {
+public abstract class ExcelLoaderTweaker implements ITweaker {
 
-    private Map<String, String> launchArgs;
-    private List<String> hangingArgs;
+    protected Map<String, String> launchArgs;
+    protected List<String> hangingArgs;
 
     @Override
     public void acceptOptions(final List<String> args, final File gameDir, final File assetsDir,
             final String profile) {
         // Use the launch arguments on Launch.blackboard, so the full args are passed between loaders
         this.launchArgs = (Map<String, String>) Launch.blackboard.get("launchArgs");
-        if (this.launchArgs == null) Launch.blackboard.put("launchArgs", this.launchArgs = Maps.newHashMap());
+        if (this.launchArgs == null) {
+            Launch.blackboard.put("launchArgs", this.launchArgs = Maps.newHashMap());
+        }
         this.hangingArgs = Lists.newArrayList();
 
         // Populate the launch arguments from the arguments given to ExcelLoader
@@ -71,17 +72,12 @@ public class ExcelLoaderTweaker implements ITweaker {
             }
         }
 
-        // Populate the launch arguments with any missing *mandatory* arguments
-        if (!this.launchArgs.containsKey("--version")) {
-            this.launchArgs.put("--version", SharedConstants.Mc.VERSION);
-        }
-        if (!this.launchArgs.containsKey("--gameDir")) {
-            this.launchArgs.put("--gameDir", gameDir != null ? gameDir.getAbsolutePath() : new File(".").getAbsolutePath());
-        }
-        if (!this.launchArgs.containsKey("--assetsDir") && assetsDir != null) {
-            this.launchArgs.put("--assetsDir", assetsDir.getAbsolutePath());
-        }
+        // Let the server/client tweaker do what it wants
+        this._acceptOptions(args, gameDir, assetsDir, profile);
     }
+
+    public abstract void _acceptOptions(final List<String> args, final File gameDir, final File assetsDir,
+            final String profile);
 
     @Override
     public void injectIntoClassLoader(final LaunchClassLoader loader) {
@@ -91,11 +87,6 @@ public class ExcelLoaderTweaker implements ITweaker {
         configureMixinEnvironment();
 
         log.info("Initialisation complete. Starting Minecraft...");
-    }
-
-    @Override
-    public String getLaunchTarget() {
-        return "net.minecraft.client.main.Main";
     }
 
     @Override
@@ -122,7 +113,6 @@ public class ExcelLoaderTweaker implements ITweaker {
         MixinBootstrap.init();
         Mixins.addConfigurations(
                 "mixins.excelloader.core.json");
-        MixinEnvironment.getDefaultEnvironment().setSide(MixinEnvironment.Side.CLIENT);
     }
 
 }

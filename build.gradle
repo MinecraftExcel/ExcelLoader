@@ -2,6 +2,9 @@ buildscript {
     repositories {
         mavenCentral()
         maven {
+            url = 'https://plugins.gradle.org/m2/'
+        }
+        maven {
             name = 'forge'
             url = 'http://files.minecraftforge.net/maven'
         }
@@ -12,12 +15,13 @@ buildscript {
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'gradle.plugin.net.minecrell:vanillagradle:2.2-6'
         classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'
     }
 }
 
 apply plugin: 'java'
-apply plugin: 'net.minecraftforge.gradle.tweaker-client'
+apply plugin: 'net.minecrell.vanillagradle.merged'
 apply plugin: 'org.spongepowered.mixin'
 
 sourceCompatibility = '1.8'
@@ -36,12 +40,19 @@ repositories {
 }
 
 dependencies {
+    compile('net.minecraft:launchwrapper:1.12') {
+        exclude module: 'jopt-simple'
+        exclude module: 'log4j-api'
+        exclude module: 'log4j-core'
+        exclude module: 'lwjgl'
+    }
     compile('org.spongepowered:mixin:0.7.1-SNAPSHOT') {
         exclude module: 'asm-commons'
         exclude module: 'asm-tree'
-        exclude module: 'launchwrapper'
-        exclude module: 'guava'
+        exclude module: 'commons-io'
         exclude module: 'gson'
+        exclude module: 'guava'
+        exclude module: 'launchwrapper'
     }
 }
 
@@ -50,7 +61,9 @@ minecraft {
     mappings = 'snapshot_20170803'
     runDir = 'run'
 
-    tweakClass = 'me.jamiemansfield.excel.launch.ExcelLoaderTweaker'
+    mainClass = 'net.minecraft.launchwrapper.Launch'
+    clientRunArgs = ['--tweakClass', 'me.jamiemansfield.excel.launch.ExcelLoaderClientTweaker']
+    serverRunArgs = ['--tweakClass', 'me.jamiemansfield.excel.launch.ExcelLoaderServerTweaker']
 }
 
 sourceSets {
