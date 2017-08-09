@@ -113,7 +113,6 @@ public abstract class ExcelLoaderTweaker implements ITweaker {
         loader.addClassLoaderExclusion("com.google.common.");
         loader.addClassLoaderExclusion("me.jamiemansfield.excel.launch.");
         loader.addClassLoaderExclusion("me.jamiemansfield.excel.ExcelLoader");
-        loader.addClassLoaderExclusion("me.jamiemansfield.excel.SharedConstants");
     }
 
     private static void configureMixinEnvironment() {

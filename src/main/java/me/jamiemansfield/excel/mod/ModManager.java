@@ -7,6 +7,8 @@
 package me.jamiemansfield.excel.mod;
 
 import com.google.common.collect.Maps;
+import me.jamiemansfield.excel.SharedConstants;
+import me.jamiemansfield.excel.util.Namespace;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -17,6 +19,9 @@ import java.util.Optional;
  * A manager for managing mods installed by the player.
  */
 public class ModManager {
+
+    public static final ModContainer MINECRAFT = new DummyModContainer(Namespace.MINECRAFT, "Minecraft", SharedConstants.Mc.VERSION);
+    public static final ModContainer EXCELLOADER = new DummyModContainer(Namespace.EXCELLOADER, "ExcelLoader", SharedConstants.VERSION);
 
     private final Map<String, ModContainer> mods = Maps.newHashMap();
 

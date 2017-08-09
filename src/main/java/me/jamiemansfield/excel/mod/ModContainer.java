@@ -8,31 +8,12 @@ package me.jamiemansfield.excel.mod;
 
 import me.jamiemansfield.excel.util.Namespace;
 
+import java.util.Optional;
+
 /**
  * A container to represent a mod, and its associated metadata.
  */
 public interface ModContainer {
-
-    /**
-     * Gets the identifier of the mod being contained.
-     *
-     * @return The mod's identifier
-     */
-    String getId();
-
-    /**
-     * Gets the name of the mod being contained.
-     *
-     * @return The mod's name
-     */
-    String getName();
-
-    /**
-     * Gets the version of the mod being contained.
-     *
-     * @return The mod's version
-     */
-    String getVersion();
 
     /**
      * Gets the namespace of which the mod has.
@@ -42,10 +23,37 @@ public interface ModContainer {
     Namespace getNamespace();
 
     /**
+     * Gets the identifier of the mod being contained.
+     *
+     * @return The mod's identifier
+     */
+    default String getId() {
+        return this.getNamespace().getNamespace();
+    }
+
+    /**
+     * Gets the name of the mod being contained.
+     *
+     * @return The mod's name
+     */
+    default String getName() {
+        return this.getId();
+    }
+
+    /**
+     * Gets the version of the mod being contained.
+     *
+     * @return The mod's version
+     */
+    String getVersion();
+
+    /**
      * Gets the instance of the mod being contained.
      *
      * @return The mod's instance
      */
-    Object getMod();
+    default Optional<?> getInstance() {
+        return Optional.empty();
+    }
 
 }

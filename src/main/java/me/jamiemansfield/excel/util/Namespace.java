@@ -21,6 +21,11 @@ public class Namespace implements Comparable<Namespace> {
      */
     public static final Namespace MINECRAFT = new Namespace("minecraft");
 
+    /**
+     * A {@link Namespace} instance for ExcelLoader.
+     */
+    public static final Namespace EXCELLOADER = new Namespace("excelloader");
+
     protected final String namespace;
 
     /**
