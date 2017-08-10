@@ -11,6 +11,7 @@ import static me.jamiemansfield.excel.ExcelLoader.log;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import me.jamiemansfield.excel.SharedConstants;
+import me.jamiemansfield.excel.launch.mod.Loader;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
@@ -28,10 +29,14 @@ public abstract class ExcelLoaderTweaker implements ITweaker {
 
     protected Map<String, String> launchArgs;
     protected List<String> hangingArgs;
+    protected File gameDir;
 
     @Override
     public void acceptOptions(final List<String> args, final File gameDir, final File assetsDir,
             final String profile) {
+        // Store game directory for use later on
+        this.gameDir = gameDir != null ? gameDir : new File(".");
+
         // Use the launch arguments on Launch.blackboard, so the full args are passed between loaders
         this.launchArgs = (Map<String, String>) Launch.blackboard.get("launchArgs");
         if (this.launchArgs == null) {
@@ -85,6 +90,8 @@ public abstract class ExcelLoaderTweaker implements ITweaker {
 
         configureLaunchClassLoader(loader);
         configureMixinEnvironment();
+        Loader.init(this.gameDir.toPath());
+        Loader.loadModSystems(loader);
 
         log.info("Initialisation complete. Starting Minecraft {}...", SharedConstants.Mc.VERSION);
     }

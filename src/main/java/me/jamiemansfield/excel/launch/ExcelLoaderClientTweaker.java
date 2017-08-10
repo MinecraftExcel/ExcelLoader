@@ -25,7 +25,7 @@ public class ExcelLoaderClientTweaker extends ExcelLoaderTweaker {
             this.launchArgs.put("--version", SharedConstants.Mc.VERSION);
         }
         if (!this.launchArgs.containsKey("--gameDir")) {
-            this.launchArgs.put("--gameDir", gameDir != null ? gameDir.getAbsolutePath() : new File(".").getAbsolutePath());
+            this.launchArgs.put("--gameDir", this.gameDir.getAbsolutePath());
         }
         if (!this.launchArgs.containsKey("--assetsDir") && assetsDir != null) {
             this.launchArgs.put("--assetsDir", assetsDir.getAbsolutePath());

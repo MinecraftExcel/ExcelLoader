@@ -8,6 +8,7 @@ package me.jamiemansfield.excel.launch.mod.system;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import joptsimple.internal.Strings;
 import me.jamiemansfield.excel.ExcelLoader;
 import me.jamiemansfield.excel.launch.mod.ModCandidate;
 import me.jamiemansfield.excel.mod.ModContainer;
@@ -35,9 +36,10 @@ public class ExcelModSystem implements IModSystem {
             properties.load(zipFile.getInputStream(modProperties));
 
             final String mainClass = properties.getProperty("main-class");
-            if (mainClass == null) return Optional.empty();
+            if (Strings.isNullOrEmpty(mainClass)) return Optional.empty();
 
             try {
+                Launch.classLoader.addURL(modCandidate.getSource().toFile().toURI().toURL());
                 final Injector injector = Guice.createInjector(new ExcelModGuiceModule(modCandidate.getDescriptor()));
                 final Class<?> clazz = Launch.classLoader.findClass(mainClass);
                 final Object instance = injector.getInstance(clazz);
