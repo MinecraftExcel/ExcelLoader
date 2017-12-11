@@ -29,7 +29,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import me.jamiemansfield.excel.ExcelLoader;
-import me.jamiemansfield.excel.launch.mod.system.ExcelModSystem;
 import me.jamiemansfield.excel.launch.mod.system.IModSystem;
 import me.jamiemansfield.excel.launch.mod.system.ModSystemCandidate;
 import net.minecraft.launchwrapper.LaunchClassLoader;
@@ -61,11 +60,6 @@ public final class Loader {
      * itself.
      */
     private static final Map<String, IModSystem> modSystems = Maps.newHashMap();
-
-    static {
-        // Register our mod system
-        modSystems.put("Excel", new ExcelModSystem());
-    }
 
     /**
      * Initialises the ExcelLoader mod loader, in preparation of actually
