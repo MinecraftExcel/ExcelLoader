@@ -111,6 +111,7 @@ public abstract class ExcelLoaderTweaker implements ITweaker {
         configureMixinEnvironment();
         Loader.init(this.gameDir.toPath());
         Loader.loadModSystems(loader);
+        Loader.loadMods(loader);
 
         log.info("Initialisation complete. Starting Minecraft {}...", SharedConstants.Mc.VERSION);
     }

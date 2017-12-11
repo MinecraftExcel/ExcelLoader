@@ -26,6 +26,7 @@
 package me.jamiemansfield.excel.mod;
 
 import com.google.common.collect.Maps;
+import me.jamiemansfield.excel.ExcelLoader;
 import me.jamiemansfield.excel.SharedConstants;
 import me.jamiemansfield.excel.util.Namespace;
 
@@ -45,7 +46,8 @@ public class ModManager {
     private final Map<String, ModContainer> mods = Maps.newHashMap();
 
     /**
-     * Gets an immutable {@link Collection} of all {@link ModContainer}s.
+     * Gets an immutable view of all the loaded mods, in the form of
+     * their {@link ModContainer}s.
      *
      * @return The mods
      */
@@ -74,6 +76,25 @@ public class ModManager {
      */
     public boolean isLoaded(final String id) {
         return this.mods.containsKey(id);
+    }
+
+    /**
+     * Registers the given {@link ModContainer} to the manager.
+     *
+     * <b>Mods should not use this!</b>
+     *
+     * @param container The mod container
+     * @return {@code True} if the mod was registered,
+     *         {@code false} otherwise
+     */
+    public boolean registerMod(final ModContainer container) {
+        if (this.mods.containsKey(container.getId())) {
+            ExcelLoader.log.warn("The mod '{}' was attempted to be registered, however a mod by that id has already been registered!",
+                    container.getId());
+            return false;
+        }
+        this.mods.put(container.getId(), container);
+        return true;
     }
 
 }

@@ -39,6 +39,9 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
@@ -151,7 +154,21 @@ public class ModDescriptor {
         public static ModDescriptor deserialise(final String obj) {
             try {
                 return gson.fromJson(obj, ModDescriptor.class);
-            } catch (JsonSyntaxException ex) {
+            } catch (final JsonSyntaxException ex) {
+                throw new RuntimeException("Failed to parse mod descriptor!", ex);
+            }
+        }
+
+        /**
+         * Deserialises the given json source, to a {@link ModDescriptor}.
+         *
+         * @param is The input stream
+         * @return The mod descriptor
+         */
+        public static ModDescriptor deserialise(final InputStream is) {
+            try (final InputStreamReader reader = new InputStreamReader(is)) {
+                return gson.fromJson(reader, ModDescriptor.class);
+            } catch (final JsonSyntaxException | IOException ex) {
                 throw new RuntimeException("Failed to parse mod descriptor!", ex);
             }
         }

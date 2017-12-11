@@ -31,6 +31,8 @@ import com.google.common.collect.Maps;
 import me.jamiemansfield.excel.ExcelLoader;
 import me.jamiemansfield.excel.launch.mod.system.IModSystem;
 import me.jamiemansfield.excel.launch.mod.system.ModSystemCandidate;
+import me.jamiemansfield.excel.mod.ModContainer;
+import me.jamiemansfield.excel.mod.ModDescriptor;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
 import java.io.IOException;
@@ -40,6 +42,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -157,6 +160,54 @@ public final class Loader {
         }
 
         ExcelLoader.log.info("Loaded {} mod systems", modSystems.size());
+    }
+
+    public static void loadMods(final LaunchClassLoader loader) {
+        if (!initialised) throw new RuntimeException("Loader has not been initialised!");
+
+        final List<ModCandidate> modCandidates = Lists.newArrayList();
+        final List<Path> modPaths = Lists.newArrayList();
+
+        try {
+            Files.walk(MODS_DIR)
+                    .filter(file -> file.endsWith(".jar"))
+                    .forEach(modPaths::add);
+        } catch (final IOException ex) {
+            ExcelLoader.log.warn("Failed to walk the 'mods' directory!", ex);
+        }
+
+        for (final Path modPath : modPaths) {
+            try (final JarFile modJar = new JarFile(modPath.toFile())) {
+                final ZipEntry modJsonEntry = modJar.getEntry("mod.json");
+                if (modJsonEntry == null) continue;
+
+                final ModDescriptor descriptor =
+                        ModDescriptor.Serialiser.deserialise(modJar.getInputStream(modJsonEntry));
+
+                modCandidates.add(new ModCandidate(modPath, descriptor));
+            } catch (final IOException ex) {
+                ExcelLoader.log.warn("Failed to open a potential mod!", ex);
+            }
+        }
+
+        ExcelLoader.log.info("Found {} mod candidates", modCandidates.size());
+
+        for (final ModCandidate candidate : modCandidates) {
+            final String modSystemId = candidate.getDescriptor().getSystem();
+
+            final IModSystem modSystem = modSystems.get(modSystemId);
+            if (modSystem == null) {
+                ExcelLoader.log.warn("The mod '{}' uses an uninstalled mod system '{}'!", candidate.getDescriptor().getName(), modSystemId);
+                continue;
+            }
+
+            final Optional<ModContainer> container = modSystem.load(candidate);
+            if (!container.isPresent()) continue;
+
+            ExcelLoader.modManager.registerMod(container.get());
+        }
+
+        ExcelLoader.log.info("Loaded {} mods", ExcelLoader.modManager.getMods().size());
     }
 
     private Loader() {
