@@ -1,4 +1,4 @@
-The MIT License (MIT)
+This file is part of ExcelLoader, licensed under the MIT License (MIT).
 
 Copyright (c) Jamie Mansfield <https://www.jamierocks.uk/>
 Copyright (c) contributors
