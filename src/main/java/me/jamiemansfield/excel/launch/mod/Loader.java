@@ -6,9 +6,9 @@
 
 package me.jamiemansfield.excel.launch.mod;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import joptsimple.internal.Strings;
 import me.jamiemansfield.excel.ExcelLoader;
 import me.jamiemansfield.excel.launch.mod.system.ExcelModSystem;
 import me.jamiemansfield.excel.launch.mod.system.IModSystem;
@@ -44,7 +44,7 @@ public final class Loader {
     private static final Map<String, IModSystem> modSystems = Maps.newHashMap();
 
     static {
-        // Register the our mod system
+        // Register our mod system
         modSystems.put("Excel", new ExcelModSystem());
     }
 
@@ -121,7 +121,7 @@ public final class Loader {
 
         for (final ModSystemCandidate modSystemCandidate : systemCandidates) {
             try {
-                loader.addURL(modSystemCandidate.getSource().toFile().toURI().toURL());
+                loader.addURL(modSystemCandidate.getSource().toUri().toURL());
             } catch (final MalformedURLException ex) {
                 ExcelLoader.log.warn("Failed to load a mod system candidate!", ex);
                 continue;
