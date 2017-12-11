@@ -23,28 +23,26 @@
  * THE SOFTWARE.
  */
 
-package me.jamiemansfield.excel.launch.mod;
+package me.jamiemansfield.excel.mod.descriptor;
 
-import me.jamiemansfield.excel.mod.descriptor.ModDescriptor;
+import java.io.InputStream;
+import java.util.Collection;
 
-import java.nio.file.Path;
+public interface DescriptorFormat {
 
-public class ModCandidate {
+    /**
+     * Gets the name of the descriptor file, of this format.
+     *
+     * @return The file name
+     */
+    String getFileName();
 
-    private final Path source;
-    private final ModDescriptor descriptor;
-
-    public ModCandidate(final Path source, final ModDescriptor descriptor) {
-        this.source = source;
-        this.descriptor = descriptor;
-    }
-
-    public final Path getSource() {
-        return this.source;
-    }
-
-    public final ModDescriptor getDescriptor() {
-        return this.descriptor;
-    }
+    /**
+     * Parses the mod descriptors from the given {@link InputStream}.
+     *
+     * @param stream The input stream
+     * @return The mod descriptors
+     */
+    Collection<ModDescriptor> parse(final InputStream stream);
 
 }

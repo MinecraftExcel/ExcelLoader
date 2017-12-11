@@ -32,7 +32,8 @@ import me.jamiemansfield.excel.ExcelLoader;
 import me.jamiemansfield.excel.launch.mod.system.IModSystem;
 import me.jamiemansfield.excel.launch.mod.system.ModSystemCandidate;
 import me.jamiemansfield.excel.mod.ModContainer;
-import me.jamiemansfield.excel.mod.ModDescriptor;
+import me.jamiemansfield.excel.mod.descriptor.DescriptorFormat;
+import me.jamiemansfield.excel.mod.descriptor.ModJsonFormat;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
 import java.io.IOException;
@@ -42,9 +43,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 /**
@@ -63,6 +67,17 @@ public final class Loader {
      * itself.
      */
     private static final Map<String, IModSystem> modSystems = Maps.newHashMap();
+
+    /**
+     * A {@link Map} for translating between descriptor file names, and the
+     * descriptor format itself.
+     */
+    private static final Map<String, DescriptorFormat> descriptorFormats = Maps.newHashMap();
+
+    static {
+        // Register the mod.json descriptor format
+        registerDescriptorFormat(new ModJsonFormat());
+    }
 
     /**
      * Initialises the ExcelLoader mod loader, in preparation of actually
@@ -93,6 +108,15 @@ public final class Loader {
 
         // boom, we're done
         initialised = true;
+    }
+
+    /**
+     * Registers the given descriptor format
+     *
+     * @param descriptorFormat The descriptor format
+     */
+    public static void registerDescriptorFormat(final DescriptorFormat descriptorFormat) {
+        descriptorFormats.put(descriptorFormat.getFileName(), descriptorFormat);
     }
 
     /**
@@ -151,6 +175,7 @@ public final class Loader {
                 }
                 final IModSystem modSystem = (IModSystem) modSystemClass.getConstructor().newInstance();
                 modSystem.injectIntoClassLoader(loader);
+                modSystem.provideDescriptorFormats().forEach(Loader::registerDescriptorFormat);
 
                 modSystems.put(modSystemCandidate.getId(), modSystem);
             } catch (final ClassNotFoundException | IllegalAccessException | InstantiationException |
@@ -178,13 +203,18 @@ public final class Loader {
 
         for (final Path modPath : modPaths) {
             try (final JarFile modJar = new JarFile(modPath.toFile())) {
-                final ZipEntry modJsonEntry = modJar.getEntry("mod.json");
-                if (modJsonEntry == null) continue;
+                // Find all of the descriptors in the jar
+                final Set<ZipEntry> descriptorEntries = descriptorFormats.keySet().stream()
+                        .map(modJar::getEntry)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toSet());
 
-                final ModDescriptor descriptor =
-                        ModDescriptor.Serialiser.deserialise(modJar.getInputStream(modJsonEntry));
-
-                modCandidates.add(new ModCandidate(modPath, descriptor));
+                for (final ZipEntry descriptorEntry : descriptorEntries) {
+                    final DescriptorFormat format = descriptorFormats.get(descriptorEntry.getName());
+                    // Find all of the mod candidates in the jar
+                    format.parse(modJar.getInputStream(descriptorEntry))
+                            .forEach(descriptor -> modCandidates.add(new ModCandidate(modPath, descriptor)));
+                }
             } catch (final IOException ex) {
                 ExcelLoader.log.warn("Failed to open a potential mod!", ex);
             }

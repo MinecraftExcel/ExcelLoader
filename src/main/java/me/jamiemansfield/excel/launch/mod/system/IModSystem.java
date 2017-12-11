@@ -27,9 +27,12 @@ package me.jamiemansfield.excel.launch.mod.system;
 
 import me.jamiemansfield.excel.launch.mod.ModCandidate;
 import me.jamiemansfield.excel.mod.ModContainer;
+import me.jamiemansfield.excel.mod.descriptor.DescriptorFormat;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -46,6 +49,15 @@ public interface IModSystem {
      * @see ITweaker#injectIntoClassLoader(LaunchClassLoader)
      */
     default void injectIntoClassLoader(final LaunchClassLoader loader) {
+    }
+
+    /**
+     * Provides the descriptor formats that the mod system uses.
+     *
+     * @return The descriptor formats, to register
+     */
+    default Collection<DescriptorFormat> provideDescriptorFormats() {
+        return Collections.emptySet();
     }
 
     /**
